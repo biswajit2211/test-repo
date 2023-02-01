@@ -2,5 +2,5 @@
 testing-purpose
 
 - BiswaLocal repo!
-- merging conflict i know it happens.
+- This is example for merge conflict.
 - Thanks for reading, i hope you doing well.
