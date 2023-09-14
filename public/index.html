@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Your HTML and CSS here -->
+</head>
+<body>
+    <!-- Display content from the phone -->
+    <div id="content"></div>
+    
+    <!-- Button to retrieve stored content -->
+    <button id="retrieveButton">Retrieve Stored Content</button>
+    
+    <!-- File upload input -->
+    <input type="file" id="fileInput">
+    <button id="uploadButton">Upload Content</button>
+    
+    <!-- Display uploaded content -->
+    <div id="uploadedContent"></div>
+    
+    <script>
+        const contentDiv = document.getElementById('content');
+        const retrieveButton = document.getElementById('retrieveButton');
+        const fileInput = document.getElementById('fileInput');
+        const uploadButton = document.getElementById('uploadButton');
+        const uploadedContentDiv = document.getElementById('uploadedContent');
+        
+        // Function to fetch stored content from the server
+        async function fetchStoredContent() {
+            try {
+                const response = await fetch('/getStoredContent');
+                const data = await response.json();
+                contentDiv.textContent = data.content;
+            } catch (error) {
+                console.error('Error fetching stored content:', error);
+            }
+        }
+        
+        // Function to handle file upload
+        async function handleFileUpload() {
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (response.ok) {
+                    const uploadedContent = await response.text();
+                    
+                    // Store the uploaded content in TV's local storage
+                    localStorage.setItem('uploadedContent', uploadedContent);
+
+                    // Display the uploaded content on the TV interface
+                    uploadedContentDiv.textContent = `Uploaded Content: ${uploadedContent}`;
+                } else {
+                    alert('Failed to upload content.');
+                }
+            } catch (error) {
+                console.error('Error uploading content:', error);
+            }
+        }
+        
+        // Attach event listeners to the buttons
+        retrieveButton.addEventListener('click', fetchStoredContent);
+        uploadButton.addEventListener('click', handleFileUpload);
+    </script>
+</body>
+</html>
